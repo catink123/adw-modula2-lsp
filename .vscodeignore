@@ -5,3 +5,4 @@ client/src/**
 tsconfig.json
 **/*.map
 **/*.ts
+!logo.png

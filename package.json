@@ -2,9 +2,12 @@
   "name": "adw-modula2-lsp",
   "displayName": "ADW Modula-2",
   "description": "Language Server and Syntax Support for ADW Modula-2",
+  "publisher": "catink123",
+  "repository": "https://github.com/catink123/adw-modula2-lsp",
   "version": "0.1.0",
+  "icon": "logo.png",
   "engines": {
-    "vscode": "^1.75.0"
+    "vscode": "^1.107.0"
   },
   "categories": [
     "Programming Languages"
@@ -46,7 +49,7 @@
   },
   "devDependencies": {
     "@types/node": "^25.5.2",
-    "@types/vscode": "^1.110.0",
+    "@types/vscode": "^1.107.0",
     "typescript": "^6.0.2"
   }
 }

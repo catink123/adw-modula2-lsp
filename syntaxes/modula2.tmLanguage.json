@@ -1,0 +1,58 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "ADW Modula-2",
+  "patterns": [
+    {
+      "name": "comment.block.modula2",
+      "begin": "\\(\\*",
+      "end": "\\*\\)"
+    },
+    {
+      "name": "string.quoted.single.modula2",
+      "begin": "'",
+      "end": "'"
+    },
+    {
+      "name": "string.quoted.double.modula2",
+      "begin": "\"",
+      "end": "\"(A|U)?"
+    },
+    {
+      "name": "keyword.control.modula2",
+      "match": "\\b(AND|ARRAY|BEGIN|BY|CASE|CONST|DEFINITION|DIV|DO|ELSE|ELSIF|END|EXCEPT|EXIT|EXPORT|FINALLY|FOR|FORWARD|FROM|IF|IMPLEMENTATION|IMPORT|IN|LOOP|MOD|MODULE|NOT|OF|OR|PACKEDSET|POINTER|PROCEDURE|QUALIFIED|RECORD|REPEAT|REM|RETRY|RETURN|SET|THEN|TO|TYPE|UNTIL|VAR|WHILE|WITH|GENERIC)\\b"
+    },
+    {
+      "name": "keyword.other.oo.modula2",
+      "match": "\\b(AS|ABSTRACT|CLASS|GUARD|INHERIT|OVERRIDE|READONLY|REVEAL|TRACED|UNSAFEGUARDED)\\b"
+    },
+    {
+      "name": "keyword.operator.extended.modula2",
+      "match": "\\b(BAND|BOR|BXOR|BNOT|SHL|SHR|SAR|ROL|ROR|BREAK|CONTINUE|ASM|ASSEMBLER|PUREASM|EXPORTS|MACRO|INOUT|OUT|VALUE|NOHIGH|NEAR|FAR)\\b"
+    },
+    {
+      "name": "support.type.modula2",
+      "match": "\\b(INTEGER|CARDINAL|REAL|LONGREAL|COMPLEX|LONGCOMPLEX|BOOLEAN|CHAR|BITSET|SHORTINT|INTEGER8|SHORTCARD|CARDINAL8|INTEGER16|CARDINAL16|INTEGER32|CARDINAL32|LONGINT|INTEGER64|LONGCARD|CARDINAL64|ACHAR|UCHAR|BYTEBOOL|BOOL8|WORDBOOL|BOOL16|DWORDBOOL|BOOL32|BITSET16|BITSET32|LOC|BYTE|WORD|DWORD|MACHINEWORD|ADDRESS|ADRCARD|ADRINT)\\b"
+    },
+    {
+      "name": "keyword.control.directive.modula2",
+      "match": "(%IF|%THEN|%ELSIF|%ELSE|%END|%AND|%OR|%NOT)"
+    },
+    {
+      "name": "constant.numeric.hex.modula2",
+      "match": "\\b[0-9][0-9A-Fa-f]*H\\b"
+    },
+    {
+      "name": "constant.numeric.octal.modula2",
+      "match": "\\b[0-7]+(B|C)\\b"
+    },
+    {
+      "name": "constant.numeric.float.modula2",
+      "match": "\\b[0-9]+\\.[0-9]*(E[+-]?[0-9]+)?\\b"
+    },
+    {
+      "name": "constant.numeric.decimal.modula2",
+      "match": "\\b[0-9]+\\b"
+    }
+  ],
+  "scopeName": "source.modula2"
+}

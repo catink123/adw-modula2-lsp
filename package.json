@@ -1,0 +1,52 @@
+{
+  "name": "adw-modula2-lsp",
+  "displayName": "ADW Modula-2",
+  "description": "Language Server and Syntax Support for ADW Modula-2",
+  "version": "0.1.0",
+  "engines": {
+    "vscode": "^1.75.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "activationEvents": [
+    "onLanguage:modula2"
+  ],
+  "main": "./out/client/src/extension.js",
+  "contributes": {
+    "languages": [
+      {
+        "id": "modula2",
+        "aliases": [
+          "Modula-2",
+          "modula2"
+        ],
+        "extensions": [
+          ".mod",
+          ".def"
+        ]
+      }
+    ],
+    "grammars": [
+      {
+        "language": "modula2",
+        "scopeName": "source.modula2",
+        "path": "./syntaxes/modula2.tmLanguage.json"
+      }
+    ]
+  },
+  "scripts": {
+    "compile": "tsc",
+    "watch": "tsc -w"
+  },
+  "dependencies": {
+    "vscode-languageclient": "^9.0.1",
+    "vscode-languageserver": "^9.0.1",
+    "vscode-languageserver-textdocument": "^1.0.12"
+  },
+  "devDependencies": {
+    "@types/node": "^25.5.2",
+    "@types/vscode": "^1.110.0",
+    "typescript": "^6.0.2"
+  }
+}

@@ -223,7 +223,8 @@
     "typecheck": "tsc -p .",
     "test": "node build.mjs --tests && node out/test/unit.js",
     "corpus": "node build.mjs --tests && node out/test/parse-corpus.js",
-    "package": "node build.mjs --production && vsce package --no-dependencies"
+    "package": "node build.mjs --production && vsce package --no-dependencies",
+    "release-asset": "node build.mjs --production && node -e \"require('fs').copyFileSync('dist/server.js', 'adw-modula2-lsp-server.js')\""
   },
   "dependencies": {
     "vscode-languageclient": "^10.1.2",

@@ -4,7 +4,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { URI } from 'vscode-uri';
 import {
-  createConnection, Diagnostic, DidChangeConfigurationNotification, FileChangeType, InitializeResult,
+  createConnection, Diagnostic, DidChangeConfigurationNotification, DidChangeWatchedFilesNotification, FileChangeType, InitializeResult,
   ProposedFeatures, TextDocuments, TextDocumentSyncKind, WorkDoneProgressReporter, CancellationToken,
 } from 'vscode-languageserver/node';
 import { TextDocument } from 'vscode-languageserver-textdocument';
@@ -27,6 +27,7 @@ const index = new SymbolIndex(ws);
 let roots: string[] = [];
 let settings: ClientSettings = {};
 let hasConfigCapability = false;
+let registerWatchers = false;
 const errDiagnostics = new Map<string, Map<string, Diagnostic[]>>(); // err file -> uri -> diags
 
 const log = (m: string) => connection.console.log(m);
@@ -37,6 +38,9 @@ const ready = new Promise<void>(r => (markReady = r));
 
 connection.onInitialize((params): InitializeResult => {
   hasConfigCapability = !!params.capabilities.workspace?.configuration;
+  // VS Code's client watches files itself; other clients (Zed, ...) watch what the server registers
+  registerWatchers = !!params.capabilities.workspace?.didChangeWatchedFiles?.dynamicRegistration
+    && !/visual studio code|vscode/i.test(params.clientInfo?.name ?? '');
   roots = (params.workspaceFolders ?? []).map(f => URI.parse(f.uri).fsPath);
   if (!roots.length && params.rootUri) roots = [URI.parse(params.rootUri).fsPath];
   return {
@@ -65,7 +69,9 @@ connection.onInitialize((params): InitializeResult => {
 
 async function loadSettings() {
   if (hasConfigCapability) {
-    const s = (await connection.workspace.getConfiguration('modula2')) as ClientSettings | null;
+    let s = (await connection.workspace.getConfiguration('modula2')) as (ClientSettings & { modula2?: ClientSettings }) | null;
+    // some clients answer with the whole configuration object instead of the requested section
+    if (s && typeof s === 'object' && s.modula2 && typeof s.modula2 === 'object') s = s.modula2;
     settings = s ?? {};
   }
   const t0 = Date.now();
@@ -82,6 +88,11 @@ async function loadSettings() {
 
 connection.onInitialized(async () => {
   if (hasConfigCapability) connection.client.register(DidChangeConfigurationNotification.type, { section: 'modula2' });
+  if (registerWatchers) {
+    connection.client.register(DidChangeWatchedFilesNotification.type, {
+      watchers: [{ globPattern: '**/*.{def,mod,DEF,MOD,Def,Mod}' }, { globPattern: '**/*.{err,ERR}' }],
+    });
+  }
   await loadSettings();
   markReady();
   scanErrFiles();

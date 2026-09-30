@@ -5,6 +5,7 @@ node_modules/
 dist/
 out/
 *.vsix
+adw-modula2-lsp-server.js
 *.tsbuildinfo
 
 # VS Code test runs

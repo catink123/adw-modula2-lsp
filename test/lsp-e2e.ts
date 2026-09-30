@@ -17,6 +17,8 @@ let buf = Buffer.alloc(0);
 let id = 0;
 const waiting = new Map<number, (r: unknown) => void>();
 const notes: { method: string; params: unknown }[] = [];
+const serverRequests: string[] = [];
+const zedLike = !!process.env.ZED_LIKE;
 
 server.stdout.on('data', (d: Buffer) => {
   buf = Buffer.concat([buf, d]);
@@ -29,7 +31,12 @@ server.stdout.on('data', (d: Buffer) => {
     if (process.env.LSP_TRACE) console.error("<-", JSON.stringify(msg).slice(0, 200));
     buf = buf.slice(h + 4 + len);
     if (msg.id !== undefined && !msg.method && waiting.has(msg.id)) { waiting.get(msg.id)!(msg.error ?? msg.result); waiting.delete(msg.id); }
-    else if (msg.id !== undefined && msg.method) send({ jsonrpc: '2.0', id: msg.id, result: msg.method === 'workspace/configuration' ? [{}] : null });
+    else if (msg.id !== undefined && msg.method) {
+      serverRequests.push(`${msg.method}${msg.method === 'client/registerCapability' ? ' ' + msg.params.registrations.map((r: { method: string }) => r.method).join(',') : ''}`);
+      // ZED_LIKE: answer with the whole configuration object, as some clients do
+      const config = zedLike ? [{ modula2: { diagnostics: { unresolvedIdentifiers: 'warning' } } }] : [{}];
+      send({ jsonrpc: '2.0', id: msg.id, result: msg.method === 'workspace/configuration' ? config : null });
+    }
     else if (msg.method) notes.push(msg);
   }
 });
@@ -54,7 +61,8 @@ const posOf = (needle: string) => {
   const t0 = Date.now();
   const init = await request<{ capabilities: Record<string, unknown> }>('initialize', {
     processId: process.pid, rootUri: URI.file(root).toString(), workspaceFolders: [{ uri: URI.file(root).toString(), name: 'ws' }],
-    capabilities: { workspace: { configuration: true }, window: { workDoneProgress: false } },
+    clientInfo: { name: zedLike ? 'Zed' : 'test' },
+    capabilities: { workspace: { configuration: true, didChangeWatchedFiles: { dynamicRegistration: zedLike } }, window: { workDoneProgress: false } },
   });
   console.log('capabilities:', Object.keys(init.capabilities).join(', '));
   notify('initialized', {});
@@ -85,6 +93,7 @@ const posOf = (needle: string) => {
   const t2 = Date.now();
   const wsym = await request<unknown[]>('workspace/symbol', { query: 'Draw' });
   console.log(`workspace/symbol "Draw": ${wsym.length} (${Date.now() - t2} ms)`);
+  console.log('server requests:', serverRequests.join(' | '));
   await request('shutdown', null);
   notify('exit', null);
   setTimeout(() => process.exit(0), 200);

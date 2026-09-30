@@ -1,58 +1,128 @@
 {
   "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
-  "name": "ADW Modula-2",
+  "name": "Modula-2",
+  "scopeName": "source.modula2",
   "patterns": [
-    {
+    { "include": "#comment" },
+    { "include": "#pragma" },
+    { "include": "#directive" },
+    { "include": "#module-header" },
+    { "include": "#end-name" },
+    { "include": "#procedure-header" },
+    { "include": "#class-header" },
+    { "include": "#string" },
+    { "include": "#number" },
+    { "include": "#keywords" },
+    { "include": "#builtins" },
+    { "include": "#operators" },
+    { "include": "#identifier" }
+  ],
+  "repository": {
+    "comment": {
       "name": "comment.block.modula2",
       "begin": "\\(\\*",
-      "end": "\\*\\)"
+      "end": "\\*\\)",
+      "captures": { "0": { "name": "punctuation.definition.comment.modula2" } },
+      "patterns": [
+        { "include": "#comment" },
+        { "match": "\\b(TODO|FIXME|XXX|HACK|NOTE)\\b", "name": "keyword.other.todo.modula2" }
+      ]
     },
-    {
-      "name": "string.quoted.single.modula2",
-      "begin": "'",
-      "end": "'"
+    "pragma": {
+      "name": "meta.preprocessor.pragma.modula2",
+      "begin": "<\\*",
+      "end": "\\*>",
+      "captures": { "0": { "name": "punctuation.definition.pragma.modula2" } },
+      "patterns": [
+        { "match": "\\b(IF|THEN|ELSIF|ELSE|END|NOT|AND|OR|ENVIRON|DEFINE|ASSIGN|TRUE|FALSE)\\b", "name": "keyword.control.directive.modula2" },
+        { "match": "/[A-Za-z]+(?::[A-Za-z0-9_]+)?", "name": "entity.other.attribute-name.pragma.modula2" },
+        { "match": "\\b[A-Za-z_]\\w*\\b", "name": "variable.other.pragma.modula2" }
+      ]
     },
-    {
-      "name": "string.quoted.double.modula2",
-      "begin": "\"",
-      "end": "\"(A|U)?"
+    "directive": {
+      "patterns": [
+        { "match": "%(IF|THEN|ELSIF|ELSE|END|AND|OR|NOT)\\b", "name": "keyword.control.directive.modula2" }
+      ]
     },
-    {
-      "name": "keyword.control.modula2",
-      "match": "\\b(AND|ARRAY|BEGIN|BY|CASE|CONST|DEFINITION|DIV|DO|ELSE|ELSIF|END|EXCEPT|EXIT|EXPORT|FINALLY|FOR|FORWARD|FROM|IF|IMPLEMENTATION|IMPORT|IN|LOOP|MOD|MODULE|NOT|OF|OR|PACKEDSET|POINTER|PROCEDURE|QUALIFIED|RECORD|REPEAT|REM|RETRY|RETURN|SET|THEN|TO|TYPE|UNTIL|VAR|WHILE|WITH|GENERIC)\\b"
+    "module-header": {
+      "match": "\\b(?:(UNSAFEGUARDED|GENERIC)\\s+)?(?:(UNSAFEGUARDED|GENERIC)\\s+)?(?:(DEFINITION|IMPLEMENTATION)\\s+)?(MODULE)\\s+([A-Za-z_]\\w*)",
+      "captures": {
+        "1": { "name": "storage.modifier.modula2" },
+        "2": { "name": "storage.modifier.modula2" },
+        "3": { "name": "storage.modifier.modula2" },
+        "4": { "name": "keyword.declaration.module.modula2" },
+        "5": { "name": "entity.name.namespace.modula2" }
+      }
     },
-    {
-      "name": "keyword.other.oo.modula2",
-      "match": "\\b(AS|ABSTRACT|CLASS|GUARD|INHERIT|OVERRIDE|READONLY|REVEAL|TRACED|UNSAFEGUARDED)\\b"
+    "procedure-header": {
+      "match": "\\b(?:(OVERRIDE|ABSTRACT)\\s+)?(PROCEDURE)\\s+([A-Za-z_]\\w*)",
+      "captures": {
+        "1": { "name": "storage.modifier.modula2" },
+        "2": { "name": "keyword.declaration.procedure.modula2" },
+        "3": { "name": "entity.name.function.modula2" }
+      }
     },
-    {
-      "name": "keyword.operator.extended.modula2",
-      "match": "\\b(BAND|BOR|BXOR|BNOT|SHL|SHR|SAR|ROL|ROR|BREAK|CONTINUE|ASM|ASSEMBLER|PUREASM|EXPORTS|MACRO|INOUT|OUT|VALUE|NOHIGH|NEAR|FAR)\\b"
+    "class-header": {
+      "match": "\\b(?:(ABSTRACT|TRACED|UNTRACED)\\s+)?(CLASS)\\s+([A-Za-z_]\\w*)",
+      "captures": {
+        "1": { "name": "storage.modifier.modula2" },
+        "2": { "name": "keyword.declaration.class.modula2" },
+        "3": { "name": "entity.name.type.class.modula2" }
+      }
     },
-    {
-      "name": "support.type.modula2",
-      "match": "\\b(INTEGER|CARDINAL|REAL|LONGREAL|COMPLEX|LONGCOMPLEX|BOOLEAN|CHAR|BITSET|SHORTINT|INTEGER8|SHORTCARD|CARDINAL8|INTEGER16|CARDINAL16|INTEGER32|CARDINAL32|LONGINT|INTEGER64|LONGCARD|CARDINAL64|ACHAR|UCHAR|BYTEBOOL|BOOL8|WORDBOOL|BOOL16|DWORDBOOL|BOOL32|BITSET16|BITSET32|LOC|BYTE|WORD|DWORD|MACHINEWORD|ADDRESS|ADRCARD|ADRINT)\\b"
+    "end-name": {
+      "match": "\\b(END)\\s+([A-Za-z_]\\w*)\\s*(?=[;.])",
+      "captures": {
+        "1": { "name": "keyword.control.modula2" },
+        "2": { "name": "entity.name.function.end.modula2" }
+      }
     },
-    {
-      "name": "keyword.control.directive.modula2",
-      "match": "(%IF|%THEN|%ELSIF|%ELSE|%END|%AND|%OR|%NOT)"
+    "string": {
+      "patterns": [
+        { "name": "string.quoted.double.modula2", "match": "\"[^\"\\n]*\"[AU]?" },
+        { "name": "string.quoted.single.modula2", "match": "'[^'\\n]*'[AU]?" }
+      ]
     },
-    {
-      "name": "constant.numeric.hex.modula2",
-      "match": "\\b[0-9][0-9A-Fa-f]*H\\b"
+    "number": {
+      "patterns": [
+        { "name": "constant.numeric.float.modula2", "match": "\\b\\d+\\.\\d*(?:[Ee][+-]?\\d+)?(?!\\.)" },
+        { "name": "constant.numeric.hex.modula2", "match": "\\b\\d[0-9A-Fa-f]*[Hh]\\b" },
+        { "name": "constant.character.modula2", "match": "\\b[0-7]+C\\b" },
+        { "name": "constant.numeric.octal.modula2", "match": "\\b[0-7]+B\\b" },
+        { "name": "constant.numeric.integer.modula2", "match": "\\b\\d+\\b" }
+      ]
     },
-    {
-      "name": "constant.numeric.octal.modula2",
-      "match": "\\b[0-7]+(B|C)\\b"
+    "keywords": {
+      "patterns": [
+        { "name": "keyword.control.modula2", "match": "\\b(IF|THEN|ELSIF|ELSE|END|CASE|OF|WHILE|DO|REPEAT|UNTIL|FOR|TO|BY|LOOP|EXIT|RETURN|WITH|GUARD|AS|BEGIN|EXCEPT|FINALLY|RETRY|ASM)\\b" },
+        { "name": "keyword.other.import.modula2", "match": "\\b(IMPORT|FROM|EXPORT|QUALIFIED)\\b" },
+        { "name": "keyword.declaration.modula2", "match": "\\b(CONST|TYPE|VAR|PROCEDURE|MODULE|DEFINITION|IMPLEMENTATION|CLASS|INHERIT|REVEAL)\\b" },
+        { "name": "storage.type.modula2", "match": "\\b(ARRAY|RECORD|SET|PACKEDSET|POINTER)\\b" },
+        { "name": "storage.modifier.modula2", "match": "\\b(FORWARD|OVERRIDE|ABSTRACT|READONLY|TRACED|UNTRACED|UNSAFEGUARDED|GENERIC)\\b" },
+        { "name": "keyword.operator.word.modula2", "match": "\\b(AND|OR|NOT|DIV|MOD|REM|IN|BAND|BOR|BXOR|BNOT|SHL|SHR|SAR|ROL|ROR)\\b" }
+      ]
     },
-    {
-      "name": "constant.numeric.float.modula2",
-      "match": "\\b[0-9]+\\.[0-9]*(E[+-]?[0-9]+)?\\b"
+    "builtins": {
+      "patterns": [
+        { "name": "support.type.primitive.modula2", "match": "\\b(BOOLEAN|CHAR|ACHAR|UCHAR|INTEGER|CARDINAL|LONGINT|LONGCARD|SHORTINT|SHORTCARD|INTEGER8|INTEGER16|INTEGER32|INTEGER64|CARDINAL8|CARDINAL16|CARDINAL32|CARDINAL64|REAL|LONGREAL|SHORTREAL|COMPLEX|LONGCOMPLEX|BITSET|PROC|PROTECTION|ADDRESS|BYTE|WORD|DWORD|LOC|ADRCARD|ADRINT)\\b" },
+        { "name": "constant.language.modula2", "match": "\\b(TRUE|FALSE|NIL|EMPTY|NILPROC|SELF)\\b" },
+        { "name": "support.function.builtin.modula2", "match": "\\b(ABS|CAP|CHR|ACHR|UCHR|CMPLX|DEC|DISPOSE|EXCL|FLOAT|HALT|HIGH|IM|INC|INCL|INT|LENGTH|LFLOAT|MAX|MIN|NEW|ODD|ORD|ORD8|ORD16|ORD32|ORD64|INT8|INT16|INT32|INT64|RE|SIZE|TRUNC|VAL|CREATE|DESTROY|ISMEMBER|CLONE|ADR|CAST|TSIZE|FUNC|UNREFERENCED_PARAMETER|FIXME|BREAK|CONTINUE)\\b(?=\\s*\\(|\\s*;|\\s*$)" }
+      ]
     },
-    {
-      "name": "constant.numeric.decimal.modula2",
-      "match": "\\b[0-9]+\\b"
+    "operators": {
+      "patterns": [
+        { "name": "keyword.operator.assignment.modula2", "match": ":=" },
+        { "name": "keyword.operator.comparison.modula2", "match": "<=|>=|<>|#|=|<|>" },
+        { "name": "keyword.operator.range.modula2", "match": "\\.\\." },
+        { "name": "keyword.operator.arithmetic.modula2", "match": "[-+*/&~]" },
+        { "name": "keyword.operator.dereference.modula2", "match": "\\^" }
+      ]
+    },
+    "identifier": {
+      "patterns": [
+        { "match": "\\b([A-Za-z_]\\w*)\\s*(?=\\()", "captures": { "1": { "name": "entity.name.function.call.modula2" } } },
+        { "match": "\\b[A-Za-z_]\\w*\\b", "name": "variable.other.modula2" }
+      ]
     }
-  ],
-  "scopeName": "source.modula2"
+  }
 }

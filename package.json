@@ -1,21 +1,43 @@
 {
   "name": "adw-modula2-lsp",
   "displayName": "ADW Modula-2",
-  "description": "Language Server and Syntax Support for ADW Modula-2",
+  "description": "Language server for ADW (Stony Brook) Modula-2: outline, go to definition/declaration/implementation, find references, rename, hover docs, completion, signature help, call hierarchy, semantic highlighting and diagnostics, with support for ADW classes, generics and conditional compilation.",
+  "version": "1.1.0",
   "publisher": "catink123",
-  "repository": "https://github.com/catink123/adw-modula2-lsp",
-  "version": "0.1.0",
+  "author": {
+    "name": "Matsvei Radzevich"
+  },
+  "license": "MIT",
   "icon": "logo.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/catink123/adw-modula2-lsp.git"
+  },
+  "bugs": {
+    "url": "https://github.com/catink123/adw-modula2-lsp/issues"
+  },
+  "homepage": "https://github.com/catink123/adw-modula2-lsp#readme",
   "engines": {
-    "vscode": "^1.107.0"
+    "vscode": "^1.91.0"
   },
   "categories": [
-    "Programming Languages"
+    "Programming Languages",
+    "Snippets"
   ],
+  "keywords": [
+    "modula-2",
+    "modula2",
+    "m2",
+    "adw",
+    "stony brook",
+    "lsp",
+    "language server"
+  ],
+  "main": "./dist/extension.js",
   "activationEvents": [
-    "onLanguage:modula2"
+    "workspaceContains:**/*.def",
+    "workspaceContains:**/*.DEF"
   ],
-  "main": "./out/client/src/extension.js",
   "contributes": {
     "languages": [
       {
@@ -25,9 +47,14 @@
           "modula2"
         ],
         "extensions": [
+          ".def",
           ".mod",
-          ".def"
-        ]
+          ".DEF",
+          ".MOD",
+          ".Def",
+          ".Mod"
+        ],
+        "configuration": "./language-configuration.json"
       }
     ],
     "grammars": [
@@ -36,20 +63,179 @@
         "scopeName": "source.modula2",
         "path": "./syntaxes/modula2.tmLanguage.json"
       }
+    ],
+    "snippets": [
+      {
+        "language": "modula2",
+        "path": "./snippets/modula2.json"
+      }
+    ],
+    "commands": [
+      {
+        "command": "modula2.switchDefMod",
+        "title": "Switch Between DEFINITION and IMPLEMENTATION Module",
+        "category": "Modula-2"
+      },
+      {
+        "command": "modula2.reindex",
+        "title": "Rebuild Index",
+        "category": "Modula-2"
+      },
+      {
+        "command": "modula2.restartServer",
+        "title": "Restart Language Server",
+        "category": "Modula-2"
+      },
+      {
+        "command": "modula2.showOutput",
+        "title": "Show Language Server Output",
+        "category": "Modula-2"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "modula2.switchDefMod",
+        "key": "alt+o",
+        "when": "editorLangId == modula2"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "command": "modula2.switchDefMod",
+          "when": "editorLangId == modula2",
+          "group": "navigation@90"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Modula-2",
+      "properties": {
+        "modula2.adwPath": {
+          "type": "string",
+          "default": "C:\\Program Files (x86)\\ADW Software Modula-2",
+          "description": "ADW Modula-2 installation folder. Its *def sub-folders (def, isodef, win32apidef, ...) are indexed as library modules."
+        },
+        "modula2.searchPaths": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "description": "Additional folders (searched recursively) containing .def/.mod files outside the workspace."
+        },
+        "modula2.exclude": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "**/.svn/**",
+            "**/node_modules/**",
+            "**/.git/**"
+          ],
+          "description": "Glob patterns of files and folders to ignore when indexing."
+        },
+        "modula2.defines": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "boolean"
+          },
+          "default": {},
+          "markdownDescription": "Conditional compilation symbols used to evaluate `<*IF ... THEN*>` and `%IF ... %THEN`, e.g. `{ \"VIEWER\": false, \"DEBUG\": true }`. `AMD64` defaults to `true`; undefined symbols are `FALSE`. `<*ENVIRON(X, v)*>` in a file supplies a default."
+        },
+        "modula2.diagnostics.unresolvedIdentifiers": {
+          "type": "string",
+          "enum": [
+            "off",
+            "hint",
+            "information",
+            "warning",
+            "error"
+          ],
+          "default": "information",
+          "description": "Severity for identifiers the language server cannot resolve (imports that are not exported are always errors)."
+        },
+        "modula2.diagnostics.compilerErrors": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show messages from ADW compiler *.err files (ignored when older than the source)."
+        },
+        "modula2.index.onStartup": {
+          "type": "boolean",
+          "default": true,
+          "description": "Build the workspace symbol index in the background at startup."
+        },
+        "modula2.cacheSize": {
+          "type": "number",
+          "default": 400,
+          "description": "Number of parsed modules kept in memory."
+        }
+      }
+    },
+    "configurationDefaults": {
+      "[modula2]": {
+        "files.encoding": "windows1252",
+        "editor.semanticHighlighting.enabled": true,
+        "editor.wordBasedSuggestions": "off"
+      }
+    },
+    "problemMatchers": [
+      {
+        "name": "adw-m2",
+        "label": "ADW Modula-2 compiler",
+        "owner": "modula2",
+        "source": "ADW m2e",
+        "fileLocation": [
+          "autoDetect",
+          "${workspaceFolder}"
+        ],
+        "pattern": {
+          "regexp": "^(.*?)\\((\\d+)\\)\\((\\d+)\\)\\s*:\\s*(error|warning|info\\w*|fatal\\w*)\\s*:\\s*(.*)$",
+          "file": 1,
+          "line": 2,
+          "column": 3,
+          "severity": 4,
+          "message": 5
+        }
+      }
+    ],
+    "semanticTokenScopes": [
+      {
+        "language": "modula2",
+        "scopes": {
+          "namespace": [
+            "entity.name.namespace.modula2"
+          ],
+          "enumMember": [
+            "variable.other.enummember.modula2"
+          ],
+          "variable.readonly": [
+            "variable.other.constant.modula2"
+          ]
+        }
+      }
     ]
   },
   "scripts": {
-    "compile": "tsc",
-    "watch": "tsc -w"
+    "build": "node build.mjs",
+    "watch": "node build.mjs --watch",
+    "typecheck": "tsc -p .",
+    "test": "node build.mjs --tests && node out/test/unit.js",
+    "corpus": "node build.mjs --tests && node out/test/parse-corpus.js",
+    "package": "node build.mjs --production && vsce package --no-dependencies"
   },
   "dependencies": {
-    "vscode-languageclient": "^9.0.1",
-    "vscode-languageserver": "^9.0.1",
-    "vscode-languageserver-textdocument": "^1.0.12"
+    "vscode-languageclient": "^10.1.2",
+    "vscode-languageserver": "^10.1.2",
+    "vscode-languageserver-textdocument": "^1.0.15",
+    "vscode-uri": "^3.2.0"
   },
   "devDependencies": {
-    "@types/node": "^25.5.2",
-    "@types/vscode": "^1.107.0",
-    "typescript": "^6.0.2"
+    "@types/node": "^26.6.3",
+    "@types/vscode": "~1.91.0",
+    "@vscode/vsce": "^4.0.0",
+    "esbuild": "^0.28.2",
+    "typescript": "^7.0.2"
   }
 }

@@ -1,0 +1,84 @@
+{
+  "Definition module": {
+    "prefix": "defmod",
+    "body": ["UNSAFEGUARDED DEFINITION MODULE ${1:${TM_FILENAME_BASE}};", "", "$0", "", "END $1."],
+    "description": "DEFINITION MODULE"
+  },
+  "Implementation module": {
+    "prefix": "impmod",
+    "body": ["UNSAFEGUARDED IMPLEMENTATION MODULE ${1:${TM_FILENAME_BASE}};", "", "$0", "", "BEGIN", "END $1."],
+    "description": "IMPLEMENTATION MODULE"
+  },
+  "Procedure": {
+    "prefix": "proc",
+    "body": ["PROCEDURE ${1:Name}(${2});", "", "BEGIN", "\t$0", "END $1;"],
+    "description": "PROCEDURE ... END"
+  },
+  "Function procedure": {
+    "prefix": "func",
+    "body": ["PROCEDURE ${1:Name}(${2}) : ${3:BOOLEAN};", "", "BEGIN", "\t$0", "\tRETURN ${4:FALSE};", "END $1;"],
+    "description": "PROCEDURE returning a value"
+  },
+  "Class": {
+    "prefix": "class",
+    "body": ["CLASS ${1:cName};", "", "${2:INHERIT ${3:cBase};}", "", "REVEAL ${4};", "", "$0", "", "END $1;"],
+    "description": "CLASS ... END"
+  },
+  "Override": {
+    "prefix": "override",
+    "body": ["OVERRIDE PROCEDURE ${1:Name}(${2});", "", "BEGIN", "\t$0", "END $1;"],
+    "description": "OVERRIDE PROCEDURE"
+  },
+  "If": {
+    "prefix": "if",
+    "body": ["IF ${1:condition} THEN", "\t$0", "END;"]
+  },
+  "If else": {
+    "prefix": "ife",
+    "body": ["IF ${1:condition} THEN", "\t$2", "ELSE", "\t$0", "END;"]
+  },
+  "For": {
+    "prefix": "for",
+    "body": ["FOR ${1:i} := ${2:0} TO ${3:n} DO", "\t$0", "END;"]
+  },
+  "While": {
+    "prefix": "while",
+    "body": ["WHILE ${1:condition} DO", "\t$0", "END;"]
+  },
+  "Repeat": {
+    "prefix": "repeat",
+    "body": ["REPEAT", "\t$0", "UNTIL ${1:condition};"]
+  },
+  "Loop": {
+    "prefix": "loop",
+    "body": ["LOOP", "\t$0", "END;"]
+  },
+  "Case": {
+    "prefix": "case",
+    "body": ["CASE ${1:expr} OF", "| ${2:label}:", "\t$0", "ELSE", "END;"]
+  },
+  "With": {
+    "prefix": "with",
+    "body": ["WITH ${1:designator} DO", "\t$0", "END;"]
+  },
+  "Guard": {
+    "prefix": "guard",
+    "body": ["GUARD ${1:obj} AS", "| ${2:x} : ${3:cClass} DO", "\t$0", "ELSE", "END;"]
+  },
+  "Record": {
+    "prefix": "record",
+    "body": ["${1:tName} = RECORD", "\t$0", "END;"]
+  },
+  "From import": {
+    "prefix": "from",
+    "body": ["FROM ${1:Module} IMPORT ${0};"]
+  },
+  "Conditional compilation": {
+    "prefix": "<*if",
+    "body": ["<*IF ${1:VIEWER} THEN*>", "$0", "<*END*>"]
+  },
+  "Exception handler": {
+    "prefix": "except",
+    "body": ["EXCEPT", "\t$0"]
+  }
+}
